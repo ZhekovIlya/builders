@@ -1,0 +1,31 @@
+<project name="global" default="build">
+
+	 <property name="utils.build.file" value="utils/build.xml"/>
+	 <property name="services.build.file" value="services/build.xml"/>
+	 <property name="admin.build.file" value="admin/build.xml"/>
+	 <property name="web.build.file" value="web/build.xml"/>
+
+	<target name="test">
+		<ant useNativeBaseDir="true" antfile="${utils.build.file}" target="test"/>
+		<ant useNativeBaseDir="true" antfile="${services.build.file}" target="test"/>
+		<ant useNativeBaseDir="true" antfile="${admin.build.file}" target="test"/>
+		<ant useNativeBaseDir="true" antfile="${web.build.file}" target="test"/>
+	</target>
+
+	<target name="publish">
+		<ant useNativeBaseDir="true" antfile="${utils.build.file}" target="publish"/>
+		<ant useNativeBaseDir="true" antfile="${services.build.file}" target="publish"/>
+	</target>
+
+	<target name="build" depends="publish">
+		<ant useNativeBaseDir="true" antfile="${admin.build.file}" target="build"/>
+		<ant useNativeBaseDir="true" antfile="${web.build.file}" target="build"/>
+	</target>
+
+	<target name="clean">
+		<ant usenativebasedir="true" antfile="${utils.build.file}" target="clean"/>
+		<ant usenativebasedir="true" antfile="${services.build.file}" target="clean"/>
+		<ant usenativebasedir="true" antfile="${admin.build.file}" target="clean"/>
+		<ant usenativebasedir="true" antfile="${web.build.file}" target="clean"/>
+	</target>
+</project>

@@ -1,0 +1,7 @@
+<ivy-module version="2.0">
+    <info organisation="com.epam.cdp" module="web"/>
+    <dependencies>
+        <dependency org="com.epam.cdp" name="services" rev="1.0"/>
+	<dependency org="javax.servlet" name="servlet-api" rev="2.5"/>
+    </dependencies>
+</ivy-module>

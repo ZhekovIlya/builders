@@ -1,0 +1,96 @@
+<project name="utils" default="run" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+	 <property name="source.dir" value="src/main/java/"/>
+	 <property name="build.dir" value="build" />
+	 <property name="resources.dir" value="src/main/resources/"/>
+	 <property name="test.source.dir" value="src/test/java/"/>
+	 <property name="test.resources.dir" value="src/test/resources/"/>
+	 <property name="compiled.source.dir" value="${build.dir}/classes/main/"/>
+	 <property name="compiled.test.dir" value="${build.dir}/classes/test/"/>
+	 <property name="lib.dir" value="lib/"/>
+	 <property name="report.dir" value="${build.dir}/reports/"/>
+
+	<!-- Ivy resolve -->
+	<target name="resolve" description="--> retrieve dependencies with Ivy">
+        <ivy:retrieve/>
+    </target>
+
+	<!-- Clean -->
+	<target name="clean" depends="resolve" description="--> clean up">
+		<delete dir="${build.dir}"/>
+	</target>
+
+	<!-- Path -->
+	<path id="classpath" description="--> external libraries classpath">
+		<fileset dir="${basedir}/">
+			<include name="${lib.dir}/*.jar" />
+		</fileset>
+	</path>
+
+	<path id="test.path">
+	  <path refid="classpath"/>
+	  <pathelement path="${compiled.source.dir}"/>
+	</path>
+
+	<!-- Compile -->
+	<target name="copy_resources">
+		<copy todir="${compiled.source.dir}/resources">
+			<fileset dir="${resources.dir}" />
+		</copy>
+	</target>
+
+	<target name="compile" depends="clean, copy_resources">
+		<mkdir dir ="${compiled.source.dir}"/>
+		<javac srcdir="${source.dir}" destdir="${compiled.source.dir}" classpathref="classpath"/>
+	</target>
+
+	<!-- Test -->
+	<target name="copy_test_resources">
+		<copy todir="${compiled.test.dir}/resources">
+		  <fileset dir="${test.resources.dir}" />
+		</copy>
+	</target>
+
+	<target name="compile_test" depends="compile, copy_test_resources" >
+		<mkdir dir ="${compiled.test.dir}"/>
+		<javac srcdir="${test.source.dir}" destdir="${compiled.test.dir}" classpathref="test.path" includeantruntime="false"/>
+	</target>
+
+	<target name="test" depends="compile_test">
+	    <mkdir dir="${report.dir}"/>
+
+	    <junit printsummary="yes" haltonfailure="no">
+			<classpath>
+				<pathelement location="${compiled.test.dir}"/>
+				<pathelement location="${test.resources.dir}"/>
+				<path refid="test.path"/>
+			</classpath>
+
+			<formatter type="xml" />
+			<formatter type="plain" />
+
+			<batchtest fork="yes" todir="${report.dir}">
+				<fileset dir="${test.source.dir}">
+					<include name="**/*.java" />
+				</fileset>
+			</batchtest>
+	    </junit>
+	</target>
+
+	<!-- Build -->
+	<target name="build" depends="test">
+		<war destfile="${build.dir}/web.war" needxmlfile='false'>
+		  <lib dir="${lib.dir}"/>
+		  <classes dir="${compiled.source.dir}"/>
+		</war>
+	</target>
+
+	<target name="publish" depends="build">
+		<ivy:publish resolver="local" overwrite="true" pubrevision="1.0">
+			<artifacts pattern="build/[artifact].[ext]" />
+		</ivy:publish>
+	</target>
+
+	<!-- Default, run this -->
+	<target name="run" depends="build" />
+</project>

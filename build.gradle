@@ -1,0 +1,38 @@
+allprojects {
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+}
+
+project(":services") {
+    dependencies {
+        compile(project(":utils"))
+    }
+}
+
+project(":admin") {
+    dependencies {
+        compile(project(":services"))
+    }
+    jar {
+        destinationDirectory = file("$rootDir/build/artifacts")
+    }
+}
+
+project(":web") {
+    apply plugin: 'war'
+
+    dependencies {
+        compile(project(":services"))
+        providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.1'
+    }
+    war {
+        destinationDirectory = file("$rootDir/build/artifacts")
+    }
+}
